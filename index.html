@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" height="100%">
+<head>
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css"  />
+    <link rel="stylesheet" type="text/css" href="/static/bootstrap-switch.min.css" />
+    <script type="text/javascript" src="/static/jquery.min.js"></script>
+    <script type="text/javascript" src="/static/vue.min.js"></script>
+    <script type="text/javascript" src="/static/axios.min.js"></script>
+    <script type="text/javascript"  src="/static/echarts.min.js"></script>
+    <link rel="stylesheet" type="text/css", href="/static/bootstrap.css" />
+    <script src="/static/bootstrap.min.js"></script>    
+    <style>
+      
+    </style>
+</head>
+<body style="height:100%">
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div style="position:absolute;top:0px;width:100%;height:50px;">
+            <ul class="nav navbar-nav">
+                <li><a href="" id="HomeButton">Home</a></li>
+                <li><a href="https://www.google.com" target="_Blank">Google</a></li>
+                <li><a href="https://www.baidu.com" target="_Blank">Baidu</a></li>
+                <li><a href="https://stackoverflow.com/" target="_Blank">SO</a></li>
+                <li><a href="https://www.wikipedia.org/" target="_Blank">Wiki</a></li>
+                <li><a href="https://ieeexplore.ieee.org/Xplore/home.jsp" target="_Blank">IEEE Xplore</a></li>
+                <li><a href="https://www.sciencedirect.com/" target="_Blank">Elsevier</a></li>
+                <li><a href="https://arxiv.org/" target="_Blank">Arxiv</a></li>
+                <li><a href="https://scihub.wikicn.top/" target="_Blank">Sci-Hub</a></li>
+                <li><a href="http://119.45.172.221:8888/" target="_Blank">Jupyter</a></li>
+                <li><a href="http://119.45.172.221:7523/" target="_Blank">FRP dashboard</a></li>
+                <li><a href="http://119.78.243.182/web/contentShizi.html" target="_Blank">Yongxin Zhu</a></li>
+                <li><a href="http://sep.ucas.ac.cn/" target="_Blank">SEP</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="picdiv" style="position:absolute;top:50px;width:100%;max-height:200px;height:200px;overflow:hidden;background-image:url('static/deblur.jpg');background-repeat:no-repeat; background-size:cover;text-align:center;font-size:50px;text-shadow:#000 1px 0 0,#000 0 1px 0,#000 -1px 0 0,#000 0 -1px 0;font-size:60px;font-weight:bold;color:#2E64FE">    
+        <span style="position:absolute;top:50px;align:center;padding:0;margin:0;border:0;left:44%">CISLab</span>
+    </div>
+    <script>
+        //Please note that ip and port would be modified by the server according to the server ip.
+        //The server would add the protocol.
+        var protocol = "http";
+        var ip = "119.45.172.221";
+        var port = 10002;
+        document.getElementById("HomeButton").setAttribute("href", protocol + "://" + ip + ":" + port.toString()); 
+    </script>
+</body>
