@@ -10,7 +10,40 @@
     <link rel="stylesheet" type="text/css", href="/static/bootstrap.css" />
     <script src="/static/bootstrap.min.js"></script>    
     <style>
-      
+        .EmailDiv{
+            top:36%;
+            position:absolute;
+        }
+        .Email{
+            color:#222222;
+            position:absolute;
+            background-color:#ccffff
+        }
+        .Email:hover{
+            color:#ffffff;
+            background-color:#800040;
+            cursor:pointer;
+        }
+        .GPU{
+            color:#222222;
+            position:absolute;
+            background-color:#ccffff
+        }
+        .GPU:hover{
+            color:#ffffff;
+            background-color:#800040;
+            cursor:pointer;
+        }
+        .GPUDiv{
+            position:absolute;
+            top:42%;
+        }
+        .DetailedInfo{
+            color:#222222;
+            position:absolute;
+            background-color:#ccffff;
+        }
+        
     </style>
 </head>
 <body style="height:100%">
@@ -30,18 +63,76 @@
                 <li><a href="http://119.45.172.221:7523/" target="_Blank">FRP dashboard</a></li>
                 <li><a href="http://119.78.243.182/web/contentShizi.html" target="_Blank">Yongxin Zhu</a></li>
                 <li><a href="http://sep.ucas.ac.cn/" target="_Blank">SEP</a></li>
+                <li><a href="https://www.gmail.com" target="_Blank">Gmail</a></li>
             </ul>
         </div>
     </nav>
     <div class="picdiv" style="position:absolute;top:50px;width:100%;max-height:200px;height:200px;overflow:hidden;background-image:url('static/deblur.jpg');background-repeat:no-repeat; background-size:cover;text-align:center;font-size:50px;text-shadow:#000 1px 0 0,#000 0 1px 0,#000 -1px 0 0,#000 0 -1px 0;font-size:60px;font-weight:bold;color:#2E64FE">    
         <span style="position:absolute;top:50px;align:center;padding:0;margin:0;border:0;left:44%">CISLab</span>
     </div>
+    <div class="EmailDiv">
+        <span class="Email">Email</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="mailto:miaosi2018@sari.ac.cn">miaosi2018@sari.ac.cn (Academic) </a>; 
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="mailto:miaosi2018@gmail.com">miaosi2018@gmail.com (Industrial) </a>;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="mailto:2904661326@qq.com" >2904661326@qq.com (Personal) </a>;
+    </div>
+    <div class="GPUDiv">
+        <span class="GPU">GPU</span><br><br>
+        <div class="DetailedInfo" id="DetailedInfo">
+            
+        </div>
+    </div>
     <script>
         //Please note that ip and port would be modified by the server according to the server ip.
         //The server would add the protocol.
-        var protocol = "http";
-        var ip = "119.45.172.221";
-        var port = 10002;
+        var ip = "127.0.0.1";
+        var port = 0;
+        var wsport = port;
+        var time = 5;//time
+        var wsaddr = "ws://"+ip+":"+wsport.toString()+'/websocket';
         document.getElementById("HomeButton").setAttribute("href", protocol + "://" + ip + ":" + port.toString()); 
+        window.setInterval(RetryFunction, 1000 * time);
+        var websocket;
+        
+        function update(event){
+            //update GPU info
+            if(websocket.readyState!=1) return;
+            try{
+                var data = event.data;
+                var obj = JSON.parse(data);
+                var message = obj.message;
+                if(obj.status === 'True')
+                     document.getElementById("DetailedInfo").innerHTML = message;
+            }
+            catch(err)
+            {
+                 console.table(err);   
+            }
+        }
+        
+        
+        try{
+            websocket = new WebSocket(wsaddr); 
+            websocket.onmessage = update;
+        }
+        catch(err)
+        {
+            console.warn("The initial websocket is disconnected.")   
+        }
+        function RetryFunction() {
+            try{
+                if(websocket.readyState != WebSocket.OPEN){
+                    console.warn("The websocket (" + wsaddr + ") has been closed!");
+                    if(websocket.readyState == WebSocket.CONNECTING)
+                        websocket.close()
+                    websocket = new WebSocket(wsaddr);
+                    websocket.onmessage = update;
+                }
+            }
+            catch(err){
+                
+            }
+        }
+        
     </script>
 </body>

@@ -1,5 +1,6 @@
 {
     "protocol": "http",
+    "ip":"119.45.172.221",
     "port":10002, 
     "rootfile": "index.html",
     "prefixstr": "119.45.172.221:10002",

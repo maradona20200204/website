@@ -5,16 +5,14 @@ import tornado.web
 import tornado.websocket
 import os
 import re
-import socket
 import time
 import json
 import traceback
 from tornado.options import define, options
-ip = socket.gethostbyname(socket.gethostname())
 with open('config.json') as f:
     config_dict = json.load(f)
+ip = config_dict['ip']
 port = config_dict['port']
-print(port)
 rootfile = config_dict['rootfile']
 prefixstr = config_dict['prefixstr']
 protocol = config_dict['protocol']
@@ -34,6 +32,17 @@ def writelog(content, path='log/log.txt', logtime=True, breakline=True, ip='',pr
         content += '\n'
     with open(path, 'a') as f:
         f.write(content)
+        
+        
+def content(filename):
+    with open(filename) as f:
+        data = f.read()
+    if filename.find("htm") >= 0 or filename.find("txt") >= 0:
+        #Here I cannot use the template system of tornado, because {{}} conflicts with Vue.
+        data = data.replace('var ip = "127.0.0.1";', 'var protocol = "%s";\n\t\t var ip = "%s";'%(protocol, ip))
+        data = data.replace('port = 0', 'port = %s'%port)
+    return data
+
 
     
 class MainHandler(tornado.web.RequestHandler):
@@ -63,12 +72,47 @@ class HelloworldHandler(tornado.web.RequestHandler):
             self.write("helloworld!")
         if log:
             writelog(json.dumps({"uri":self.request.uri, "method":self.request.method, "handler":self.__class__.__name__}), ip=self.request.remote_ip) 
+
+                        
+class WebSocketHandler(tornado.websocket.WebSocketHandler):
+    cache = None
+    
+    def check_origin(self, origin):  
+        return True 
+    
+    def open(self):
+        WebSocketHandler.cache = self
+        
+    def on_close(self):
+        WebSocketHandler.cache = None
+        
+    @classmethod
+    def send_updates(cls, message=None):
+        #print(WebSocketHandler.cache)
+        if WebSocketHandler.cache:
+            if not message:
+                WebSocketHandler.cache.write_message("Hello, world! from %s:%s"%(ip, port))
+            else:
+                WebSocketHandler.cache.write_message(message)
+            
+
+class GPUInfoHandler(tornado.web.RequestHandler):
+    def post(self):
+        try:
+            info = self.get_argument('gpuinfo', 'NAK')
+            if info == 'NAK':
+                WebSocketHandler.send_updates({'status':'False', 'message':info})
+            else:
+                WebSocketHandler.send_updates({'status':'True', 'message':info})
+            self.write("ACK")
+        except:
+            self.write("NAK: " + traceback.format_exc())
             
             
 def main():
     tornado.options.parse_command_line()
     application = tornado.web.Application(
-        [("/", MainHandler), (r"/(?i)ping|/(?i)hello", HelloworldHandler)],static_path=os.path.join(os.path.dirname(__file__), "static")
+        [("/", MainHandler), (r"/(?i)ping|/(?i)hello", HelloworldHandler),('/websocket', WebSocketHandler), ('/gpu', GPUInfoHandler)],static_path=os.path.join(os.path.dirname(__file__), "static")
         )
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(port)
