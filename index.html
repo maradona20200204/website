@@ -3,12 +3,10 @@
 <head>
     <link rel="stylesheet" type="text/css" href="/static/bootstrap.min.css"  />
     <link rel="stylesheet" type="text/css" href="/static/bootstrap-switch.min.css" />
-    <script type="text/javascript" src="/static/jquery.min.js"></script>
-    <script type="text/javascript" src="/static/vue.min.js"></script>
-    <script type="text/javascript" src="/static/axios.min.js"></script>
-    <script type="text/javascript"  src="/static/echarts.min.js"></script>
     <link rel="stylesheet" type="text/css", href="/static/bootstrap.css" />
-    <script src="/static/bootstrap.min.js"></script>    
+    <script type="text/javascript" src="/static/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.fancygrid.com/fancy.min.js"></script>
+    <script type="text/javascript" src="/static/bootstrap.min.js"></script>    
     <style>
         .EmailDiv{
             top:36%;
@@ -37,11 +35,43 @@
         .GPUDiv{
             position:absolute;
             top:42%;
+            width:100%;
+        }
+        .Table{
+            position:absolute;
+            top:60%;
+            height:200px;
+            width:100%;
         }
         .DetailedInfo{
             color:#222222;
             position:absolute;
             background-color:#ccffff;
+            width:100%;
+        }
+        .GPUInfo{
+            position:absolute;
+            background-color:#ccffff;
+            width:100%;
+        }
+        
+        .GPUInfo:hover{
+            color:#ffffff;
+            background-color: #e6b3ff;
+            cursor:pointer;
+        }
+        
+        .fancy-grid-cell{
+            background-color:#ffffff;         
+        }
+        .fancy-grid-cell:hover{
+            background-color:#f2ccff;         
+        }
+         .fancy-grid-cell-even{
+            background-color:#ffffff;         
+        }
+        .fancy-grid-cell-even:hover{
+            background-color:#bdbdbd;         
         }
         
     </style>
@@ -82,6 +112,9 @@
             
         </div>
     </div>
+    <div class="Table" id="Table">
+        
+    </div>
     <script>
         //Please note that ip and port would be modified by the server according to the server ip.
         //The server would add the protocol.
@@ -92,11 +125,243 @@
         var wsaddr = "ws://"+ip+":"+wsport.toString()+'/websocket';
         document.getElementById("HomeButton").setAttribute("href", protocol + "://" + ip + ":" + port.toString()); 
         window.setInterval(RetryFunction, 1000 * time);
-        var websocket;
+        var websocket = null;
+       document.addEventListener("DOMContentLoaded", function() {
+          new FancyGrid({
+            theme: 'extra-gray',
+            title: 'Training Data (Log)',
+            renderTo: 'Table',
+            width: 1200,
+            height: 400,
+            data: data,
+            defaults: {
+              type: 'string',
+              width: 300,
+              sortable: true
+            },
+            columns: [{
+              index: 'company',
+              locked: true,
+              title: 'Company'
+            }, {
+              index: 'name',
+              title: 'Name'
+            }, {
+              index: 'surname',
+              title: 'Sur Name'
+            }, {
+              index: 'age',
+              title: 'Age',
+              type: 'number'
+            }]
+          });
+        });
+
+        var data = [{
+          name: 'Ted',
+          surname: 'Smith',
+          position: 'Java Developer',
+          email: 'ted.smith@gmail.com',
+          company: 'Electrical Systems',
+          age: 30,
+          education: 'High School Of Cambridge',
+          knownledge: 'Java, Ruby'
+        }, {
+          name: 'Ed',
+          surname: 'Johnson',
+          position: 'C/C++ Market Data Developer',
+          email: 'ed.johnson@gmail.com',
+          company: 'Energy and Oil',
+          age: 35,
+          education: 'High School Of Cambridge',
+          knownledge: 'C++'
+        }, {
+          name: 'Sam',
+          surname: 'Williams',
+          position: 'Technical Analyst',
+          email: 'sam.williams@gmail.com',
+          company: 'Airbus',
+          age: 38,
+          education: 'High School Of Cambridge',
+          knownledge: ''
+        }, {
+          name: 'Alexander',
+          surname: 'Brown',
+          position: 'Project Manager',
+          email: 'alexander.brown@gmail.com',
+          company: 'Renault',
+          age: 24,
+          education: 'High School Of Cambridge',
+          knownledge: ''
+        }, {
+          name: 'Nicholas',
+          surname: 'Miller',
+          position: 'Senior Software Engineer',
+          email: 'nicholas.miller@gmail.com',
+          company: 'Adobe',
+          age: 33,
+          education: 'High School Of Cambridge',
+          knownledge: 'Unix, C/C++'
+        }, {
+          name: 'Andrew',
+          surname: 'Thompson',
+          position: 'Agile Project Manager',
+          email: 'andrew.thompson@gmail.com',
+          company: 'Google',
+          age: 28,
+          education: 'High School Of Cambridge',
+          knownledge: ''
+        }, {
+          name: 'Ryan',
+          surname: 'Walker',
+          position: 'Application Support Engineer',
+          email: 'ryan.walker@gmail.com',
+          company: 'Siemens',
+          age: 39,
+          education: 'High School Of Cambridge',
+          knownledge: 'ActionScript'
+        }, {
+          name: 'John',
+          surname: 'Scott',
+          position: 'Flex Developer',
+          email: 'john.scott@gmail.com',
+          company: 'Cargo',
+          age: 45,
+          education: 'High School Of Cambridge',
+          knownledge: 'Flex'
+        }, {
+          name: 'James',
+          surname: 'Phillips',
+          position: 'Senior C++/C# Developer',
+          email: 'james.phillips@gmail.com',
+          company: 'Pro bugs',
+          age: 30,
+          education: 'High School Of Cambridge',
+          knownledge: 'C/C++, Unix'
+        }, {
+          name: 'Brian',
+          surname: 'Edwards',
+          position: 'UNIX/C++ Developer',
+          email: 'brian.edwards@gmail.com',
+          company: 'IT Consultant',
+          age: 23,
+          education: 'High School Of Cambridge',
+          knownledge: 'C/C++ Unix'
+        }, {
+          name: 'Jack',
+          surname: 'Richardson',
+          position: 'Ruby Developer',
+          email: 'jack.richardson@gmail.com',
+          company: 'Europe IT',
+          age: 24,
+          education: 'High School Of Cambridge',
+          knownledge: 'Ruby'
+        }, {
+          name: 'Alex',
+          surname: 'Howard',
+          position: 'CSS3/HTML5 Developer',
+          email: 'alex.howard@gmail.com',
+          company: 'Cisco',
+          age: 27,
+          education: 'High School Of Cambridge',
+          knownledge: 'CSS3/HTML5'
+        }, {
+          name: 'Carlos',
+          surname: 'Wood',
+          position: 'Node.js Developer',
+          email: 'carlos.wood@gmail.com',
+          company: 'HP',
+          age: 36,
+          education: 'High School Of Cambridge',
+          knownledge: 'Node.js'
+        }, {
+          name: 'Adrian',
+          surname: 'Russell',
+          position: 'Frontend Developer',
+          email: 'adrian.russell@gmail.com',
+          company: 'Micro Systems',
+          age: 31,
+          education: 'High School Of Cambridge',
+          knownledge: 'HTML, JavaScript'
+        }, {
+          name: 'Jeremy',
+          surname: 'Hamilton',
+          position: 'Scala Developer',
+          email: 'jeremy.hamilton@gmail.com',
+          company: 'Big Machines',
+          age: 30,
+          education: 'High School Of Cambridge',
+          knownledge: 'Scala'
+        }, {
+          name: 'Ivan',
+          surname: 'Woods',
+          position: 'Objective C Developer',
+          email: 'ivan.woods@gmail.com',
+          company: '',
+          age: 24,
+          education: 'High School Of Cambridge',
+          knownledge: 'Objective C'
+        }, {
+          name: 'Peter',
+          surname: 'West',
+          position: 'PHP/HTML Developer',
+          email: 'peters.west@gmail.com',
+          company: 'Adobe',
+          age: 26,
+          education: 'High School Of Cambridge',
+          knownledge: 'PHP/HTML'
+        }, {
+          name: 'Scott',
+          surname: 'Simpson',
+          position: 'Designer',
+          email: 'scott.simpson@gmail.com',
+          company: 'IBM',
+          age: 29,
+          education: 'High School Of Cambridge',
+          knownledge: 'Adobe PhotoShop'
+        }, {
+          name: 'Lorenzo',
+          surname: 'Tucker',
+          position: 'Architect',
+          email: 'lorenzo.tucker@gmail.com',
+          company: 'Intel',
+          age: 29,
+          education: 'High School Of Cambridge',
+          knownledge: ''
+        }, {
+          name: 'Randy',
+          surname: 'Grant',
+          position: 'Engineer',
+          email: 'randy.grant@gmail.com',
+          company: 'Bridges',
+          age: 30,
+          education: 'High School Of Cambridge',
+          knownledge: ''
+        }, {
+          name: 'Arthur',
+          surname: 'Gardner',
+          position: 'Analytic',
+          email: 'arthur.gardner@gmail.com',
+          company: 'Google',
+          age: 31,
+          education: 'High School Of Cambridge',
+          knownledge: ''
+        }, {
+          name: 'Orlando',
+          surname: 'Ruiz',
+          position: 'Unit Testing Developer',
+          email: 'orlando.ruiz@gmail.com',
+          company: 'Apple',
+          age: 32,
+          education: 'High School Of Cambridge',
+          knownledge: ''
+        }];
         
         function update(event){
             //update GPU info
-            if(websocket.readyState!=1) return;
+            if(!websocket || !(websocket instanceof WebSocket) || websocket.readyState!=1) {s
+                return;
+            }
             try{
                 var data = event.data;
                 var obj = JSON.parse(data);
@@ -119,18 +384,28 @@
         {
             console.warn("The initial websocket is disconnected.")   
         }
+        
+        
         function RetryFunction() {
             try{
-                if(websocket.readyState != WebSocket.OPEN){
+                if(!websocket || !(websocket instanceof WebSocket) || websocket.readyState != WebSocket.OPEN){
                     console.warn("The websocket (" + wsaddr + ") has been closed!");
                     if(websocket.readyState == WebSocket.CONNECTING)
                         websocket.close()
                     websocket = new WebSocket(wsaddr);
-                    websocket.onmessage = update;
+                    //console.log("In RetryFunction, we have tried to connect to the websocket! websocket.readyState = " + websocket.readyState.toString())
+                    if(websocket.readyState == 1){
+                        //console.log("Congratulations, it has connected!");
+                        websocket.onmessage = update;
+                    }
+                }
+                else{
+                    if(!websocket.onmessage) websocket.onmessage = update;
                 }
             }
             catch(err){
-                
+                console.warn("RetryFunction has an unknown bug now!")
+                console.table(err);
             }
         }
         
