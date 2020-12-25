@@ -4,5 +4,10 @@
     "port":10002, 
     "rootfile": "index.html",
     "prefixstr": "119.45.172.221:10002",
-    "static_file":"./"
+    "static_file":"./",
+    "log_file":"log/log.txt",
+    "data_latest_file":"log/data_latest.txt",
+    "data_cache_file":"log/data_cache.txt",
+    "gpu_latest_file":"log/gpu_latest.txt",
+    "use_websocket":"False"
 }
