@@ -223,9 +223,13 @@
         var state = 0; //0: GPU, 1: Info
         var num = 160;
         var datauri = '';
-        var wsaddr = "ws://"+ip+":"+wsport.toString()+'/websocket';
-        var queryaddr = protocol + "://" + ip + ":" + port.toString() + '/query'
-        document.getElementById("HomeButton").setAttribute("href", protocol + "://" + ip + ":" + port.toString()); 
+        function websocketurl(s) { 
+             var l = window.location; 
+             return ((l.protocol === "https:") ? "wss://" : "ws://") + l.host + l.pathname + s; 
+        } 
+        var wsaddr = websocketurl("websocket")
+        var queryaddr = "/query"
+        document.getElementById("HomeButton").setAttribute("href", window.location); 
         window.setInterval(RetryFunction, 1000 * time);
         window.setInterval(HTTPRequests, 1000 * http_interval);
         var websocket = null;  
