@@ -23,6 +23,11 @@
             background-color:#800040;
             cursor:pointer;
         }
+        .GPUDiv{
+            position:absolute;
+            top:42%;
+            width:100%;
+        }
         .GPU{
             color:#222222;
             position:absolute;
@@ -53,10 +58,47 @@
             background-color:#b2b300;
             cursor:pointer;
         }
-        .GPUDiv{
-            position:absolute;
-            top:42%;
-            width:100%;
+        .Clear{
+           text-decoration: none;
+           width:200px;
+           height:40px;
+           border:1px solid #cc0066;
+           background-color:#ffffff;
+           outline: none;/* Remove the border after the clicking event */
+           font-size:15px;
+           color:#2e64fe;
+        }
+       .Clear:hover{
+           text-decoration: underline;
+           width:200px;
+           height:40px;
+           border-color:#cc0066;
+           background-color:#cc0066;
+           border: none;
+           outline: none;/* Remove the border after the clicking event */
+           font-size:25px;
+           color:#ffffff;
+        }
+        .Download{
+           text-decoration: none;
+           width:200px;
+           height:40px;
+           border:1px solid #00004d;
+           background-color:#ffffff;
+           outline: none;/* Remove the border after the clicking event */
+           font-size:15px;
+           color:#2e64fe;
+        }
+       .Download:hover{
+           text-decoration: underline;
+           width:200px;
+           height:40px;
+           border-color:#00004d;
+           background-color:#00004d;
+           border: none;
+           outline: none;/* Remove the border after the clicking event */
+           font-size:25px;
+           color:#ffffff;
         }
         .InfoDiv{
             position:absolute;
@@ -147,7 +189,7 @@
             </ul>
         </div>
     </nav>
-    <div class="picdiv" style="position:absolute;top:50px;width:100%;max-height:200px;height:200px;overflow:hidden;background-image:url('static/deblur.jpg');background-repeat:no-repeat; background-size:cover;text-align:center;font-size:50px;text-shadow:#000 1px 0 0,#000 0 1px 0,#000 -1px 0 0,#000 0 -1px 0;font-size:60px;font-weight:bold;color:#2E64FE">    
+    <div class="picdiv" style="position:absolute;top:50px;width:100%;max-height:200px;height:200px;overflow:hidden;background-image:url('static/deblur.jpg');background-repeat:no-repeat; background-size:cover;text-align:center;text-shadow:#000 1px 0 0,#000 0 1px 0,#000 -1px 0 0,#000 0 -1px 0;font-size:60px;font-weight:bold;color:#2E64FE">    
         <span style="position:absolute;top:50px;align:center;padding:0;margin:0;border:0;left:44%">CISLab</span>
     </div>
     <div class="EmailDiv">
@@ -164,9 +206,10 @@
     </div>
     <div class="InfoDiv">
         <span class="Info">C. Training Info</span><br><br>
-        <span class="Latest" id="Latest">Latest News: </span><br>
-        <span text-align="center" style="position:absolute;left:610px"><b>Table1: Training Reports</b></span><br><br><br><br>
-        <!--<span class="Title" font-size="40px"><b>Table I: Training Reports</b></span>-->
+        <span class="Latest" id="latest">Latest news:</span><br>
+        <button id="Clear" class="Clear" onclick="clearcache()"> Clear </button>
+        <button id="Download" class="Download" onclick="download_data()"> Download </button><br><br>
+        <span text-align="center" style="position:absolute;left:610px"><b>Table 1: Training Reports</b></span><br><br><br><br>
         <div class="Table" id="Table" style="position:absolute;"></div>
     </div>
     <script>
@@ -179,6 +222,7 @@
         var http_interval = 4;
         var state = 0; //0: GPU, 1: Info
         var num = 160;
+        var datauri = '';
         var wsaddr = "ws://"+ip+":"+wsport.toString()+'/websocket';
         var queryaddr = protocol + "://" + ip + ":" + port.toString() + '/query'
         document.getElementById("HomeButton").setAttribute("href", protocol + "://" + ip + ":" + port.toString()); 
@@ -191,14 +235,36 @@
         var globaldatahttp = null;
         var globalobj = null;
         var globalobjhttp = null;
+        var cursor_local_storage = localStorage.getItem("cursor");
         var cursor = 0;
+        if(cursor_local_storage && typeof cursor_local_storage === 'string'){
+            var temp = Math.floor(Number(cursor_local_storage))
+            if(temp.toString() == cursor_local_storage)
+                cursor = temp;
+        }
         var globaltabledata_debug = null;
         var obj_debug = null;
+        var latest = localStorage.getItem("latest");
+        if(latest && typeof latest === "string")
+            document.getElementById("latest").innerHTML = latest;
         var data = [
             
         ];
-        for(var cnt = 1; cnt <= num; ++cnt)
-            data.push([cnt, '', '', '', '', '']);
+        var data_local_storage = localStorage.getItem("data");
+        var index = false;
+        try{
+            if(data_local_storage && typeof data_local_storage === 'string')
+                 index = true;
+        }
+        catch(err){
+            console.table(err);
+        }
+        if(index)
+            data = JSON.parse(data_local_storage);
+        else{
+            for(var cnt = 1; cnt <= num; ++cnt)
+                data.push([cnt, '', '', '', '', '']);
+        }
         var container1 = document.getElementById('Table');
         var hot = new Handsontable(container1, {
           data: data,
@@ -215,6 +281,7 @@
           licenseKey: 'non-commercial-and-evaluation'
          });
 
+        
         function hiddenCellRenderer(instance, td, row, col, prop, value, cell) {
             //Check for a hidden field match, if so add the CSS value
             if(row % 2 === 1 && col <= 2)
@@ -230,7 +297,6 @@
             return;
          }
         
-        //$("#Table").eq(0).prepend('<span text-align="center"><b>Table 1. Training Reports</b></caption><br></br>')
         
         function update(event){
             //update GPU info
@@ -338,7 +404,7 @@
             var project = content.project;
             var epoch = content.epoch;
             var report = content.data;
-            var latest = infoobj.latest;
+            latest = infoobj.latest;
             var array = [id+1, time, dataid, project, epoch, report];
             globaltabledata_debug = {'array':array, 'id':id, 'time':time, 'dataid':dataid, 'project':project, 'epoch':epoch, 'report':report, 'latest':latest};
             console.log("HandleTable");
@@ -350,14 +416,41 @@
                     break;
                 }
             }
-            console.log("Cursor = " + cursor.toString() + ". Insert decision: " + insert);
+            //console.log("Cursor = " + cursor.toString() + ". Insert decision: " + insert);
             if(insert)
             {
                 data[id] = array;
-                document.getElementById("Latest").innerHTML = latest;
+                document.getElementById("latest").innerHTML = latest;
                 hot.updateSettings({data:data});
                 cursor += 1;
+                localStorage.setItem("data", JSON.stringify(data));
+                localStorage.setItem("cursor", cursor.toString());
+                localStorage.setItem("latest", latest);
             }
+        }
+        
+        function clearcache(){
+            localStorage.clear();
+            data = [];
+            for(var cnt = 1; cnt <= num; ++cnt)
+                data.push([cnt, '', '', '', '', '']);
+            hot.updateSettings({data:data});
+            cursor = 0;
+            document.getElementById("latest").innerHTML = "Latest news:"
+        }
+        
+        function download_data() {
+          var textToSave = JSON.stringify(data);
+          datauri = 'data:attachment/text,' + encodeURI(textToSave);
+          const link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = datauri
+          link.setAttribute(
+              'download',
+              "table_data.json"
+          )
+          document.body.appendChild(link)
+          link.click()
         }
         
     </script>
